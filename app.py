@@ -16,15 +16,18 @@ st.markdown(
             font-family: 'Arial', sans-serif;
         }
         .stTextInput > div > div > input {
-            background-color: #161b22;
-            color: white;
+            background-color: white;
+            color: black;
             border-radius: 12px;
             padding: 12px;
             font-size: 16px;
             border: 1px solid #30363d;
         }
+        .stTextInput > div > div > input::placeholder {
+            color: grey;
+        }
         .stButton > button {
-            background-color: #238636;
+            background-color: black;
             color: white;
             border-radius: 8px;
             padding: 10px 20px;
@@ -33,7 +36,7 @@ st.markdown(
             transition: 0.3s;
         }
         .stButton > button:hover {
-            background-color: #2ea043;
+            background-color: #333;
         }
         .chat-container {
             padding: 20px;
@@ -43,7 +46,7 @@ st.markdown(
             margin: auto;
         }
         .chat-bubble-user {
-            background-color: #238636;
+            background-color: #6c757d;
             color: white;
             padding: 10px;
             border-radius: 10px;
@@ -51,10 +54,9 @@ st.markdown(
             text-align: right;
         }
         .chat-bubble-bot {
-            background-color: #30363d;
-            color: white;
+            background-color: white;
+            color: black;
             padding: 10px;
-            border-radius: 10px;
             margin: 5px 0;
             text-align: left;
         }
@@ -89,7 +91,7 @@ with chat_container:
             st.markdown(f'<div class="chat-bubble-bot">{chat["message"]}</div>', unsafe_allow_html=True)
 
 # Entrada del usuario
-st.session_state.user_input = st.text_input("Escribe tu mensaje:", value=st.session_state.user_input, key="user_input_input")
+st.session_state.user_input = st.text_input("", placeholder="Envía un mensaje a Gemini IA", value=st.session_state.user_input, key="user_input_input")
 
 # Botón de enviar
 if st.button("Enviar"):
@@ -110,6 +112,6 @@ if st.button("Enviar"):
         st.rerun()
 
 # Botón para limpiar el historial
-if st.button("🆕 Nuevo Chat"):
+if st.button("🔄 Reiniciar Chat"):
     st.session_state.chat_history = []
     st.rerun()
