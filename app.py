@@ -6,7 +6,52 @@ import os
 os.environ["GOOGLE_API_KEY"] = "AIzaSyB9ImlFo2TO-liWy7eyCNu3kZI6V1IQfRw"
 genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
-# Inicializar el historial de conversación en la sesión de Streamlit
+# Aplicar estilo oscuro con CSS
+st.markdown(
+    """
+    <style>
+        body {
+            background-color: #1e1e1e;
+            color: white;
+        }
+        .stTextInput > div > div > input {
+            background-color: #333;
+            color: white;
+            border-radius: 10px;
+            padding: 10px;
+        }
+        .stButton > button {
+            background-color: #0084ff;
+            color: white;
+            border-radius: 10px;
+            padding: 8px 16px;
+            font-size: 16px;
+        }
+        .stButton > button:hover {
+            background-color: #005bb5;
+        }
+        .chat-bubble-user {
+            background-color: #0084ff;
+            color: white;
+            padding: 10px;
+            border-radius: 10px;
+            margin: 5px 0;
+            text-align: right;
+        }
+        .chat-bubble-bot {
+            background-color: #333;
+            color: white;
+            padding: 10px;
+            border-radius: 10px;
+            margin: 5px 0;
+            text-align: left;
+        }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+# Inicializar historial de chat
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
 
@@ -16,34 +61,46 @@ def chat_with_gemini(prompt):
     response = model.generate_content(prompt)
     return response.text
 
-# Diseño de la interfaz en Streamlit
+# Título y diseño de la interfaz
 st.title("💬 Chatbot con Gemini AI")
+st.write("Escribe un mensaje y recibe una respuesta de Gemini AI.")
 
-# Mostrar el historial de chat
-st.subheader("Historial de Conversación")
-for chat in st.session_state.chat_history:
-    with st.chat_message(chat["role"]):
-        st.markdown(chat["message"])
+# Mostrar historial de chat
+st.subheader("📝 Historial de Conversación")
+chat_container = st.container()
 
-# Entrada de usuario
+with chat_container:
+    for chat in st.session_state.chat_history:
+        if chat["role"] == "user":
+            st.markdown(f'<div class="chat-bubble-user">{chat["message"]}</div>', unsafe_allow_html=True)
+        else:
+            st.markdown(f'<div class="chat-bubble-bot">{chat["message"]}</div>', unsafe_allow_html=True)
+
+# Entrada del usuario
 user_input = st.text_input("Escribe tu mensaje:", key="user_input")
 
 # Botón de enviar
 if st.button("Enviar"):
     if user_input:
-        # Guardar el mensaje del usuario
+        # Guardar mensaje del usuario
         st.session_state.chat_history.append({"role": "user", "message": user_input})
 
         # Obtener respuesta de Gemini
         response = chat_with_gemini(user_input)
 
-        # Guardar la respuesta del chatbot
+        # Guardar respuesta del bot
         st.session_state.chat_history.append({"role": "assistant", "message": response})
 
-        # Refrescar la página para actualizar la conversación
-        st.experimental_rerun()
+        # Limpiar el input sin recargar la página
+        st.session_state.user_input = ""
+
+        # Refrescar la interfaz mostrando la conversación actualizada
+        st.experimental_set_query_params(dummy=str(os.urandom(8)))  # Truco para actualizar UI sin recarga
+
+        # Volver a mostrar el historial actualizado
+        st.rerun()
 
 # Botón para limpiar el historial
 if st.button("🆕 Nuevo Chat"):
     st.session_state.chat_history = []
-    st.experimental_rerun()
+    st.rerun()
