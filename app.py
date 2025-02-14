@@ -15,50 +15,6 @@ st.markdown(
             color: white;
             font-family: 'Arial', sans-serif;
         }
-        .input-container {
-            position: relative;
-            width: 100%;
-        }
-        .stTextInput {
-            width: 100%;
-        }
-        .stTextInput > div > div {
-            position: relative;
-            width: 100%;
-        }
-        .stTextInput > div > div > input {
-            background-color: white;
-            color: black;
-            border-radius: 20px;
-            padding: 12px 50px 12px 12px;
-            font-size: 16px;
-            border: 1px solid #30363d;
-            width: 100%;
-        }
-        .stTextInput > div > div > input::placeholder {
-            color: grey;
-        }
-        .send-button {
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            background-color: black;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 36px;
-            height: 36px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-        .send-button:hover {
-            background-color: #333;
-        }
         .chat-container {
             padding: 20px;
             border-radius: 10px;
@@ -94,6 +50,25 @@ st.markdown(
         .chat-wrapper-bot {
             align-items: flex-start;
         }
+
+        /* Ocultamos el texto del botón y agregamos una imagen de fondo */
+        button[data-testid="stFormSubmitButton"] {
+            background-image: url("https://cdn-icons-png.flaticon.com/128/11865/11865313.png"); /* Reemplaza con tu URL */
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: 20px 20px;
+            background-color: black;
+            color: transparent; /* Oculta el texto de la etiqueta */
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            border: none;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        button[data-testid="stFormSubmitButton"]:hover {
+            background-color: #333;
+        }
     </style>
     """,
     unsafe_allow_html=True
@@ -111,28 +86,41 @@ def chat_with_gemini(prompt):
     response = model.generate_content(prompt)
     return response.text
 
-# Contenedor principal del chat
-st.markdown("<h1 style='text-align: center;'> ¿En qué puedo ayudarte?</h1>", unsafe_allow_html=True)
+# Título
+st.markdown("<h1 style='text-align: center;'>¿En qué puedo ayudarte?</h1>", unsafe_allow_html=True)
 st.write("")
 
+# Mostrar historial de conversación
 chat_container = st.container()
-
 with chat_container:
     for chat in st.session_state.chat_history:
         if chat["role"] == "user":
-            st.markdown(f'<div class="chat-wrapper"><div class="chat-bubble-user">{chat["message"]}</div></div>', unsafe_allow_html=True)
+            st.markdown(
+                f'<div class="chat-wrapper">'
+                f'<div class="chat-bubble-user">{chat["message"]}</div>'
+                f'</div>',
+                unsafe_allow_html=True
+            )
         else:
-            st.markdown(f'<div class="chat-wrapper-bot"><div class="chat-bubble-bot">{chat["message"]}</div></div>', unsafe_allow_html=True)
+            st.markdown(
+                f'<div class="chat-wrapper-bot">'
+                f'<div class="chat-bubble-bot">{chat["message"]}</div>'
+                f'</div>',
+                unsafe_allow_html=True
+            )
 
-# Formulario para el input del usuario
+# Formulario para enviar mensajes
 with st.form(key="chat_form", clear_on_submit=True):
     col1, col2 = st.columns([8, 1])  # Ajusta el tamaño del input y del botón
-
     with col1:
-        user_input = st.text_input("", placeholder="Envía un mensaje a Gemini IA", key="user_input")
-
+        user_input = st.text_input(
+            "",
+            placeholder="Envía un mensaje a Gemini IA",
+            key="user_input"
+        )
     with col2:
-        submit_button = st.form_submit_button("➤")
+        # El label se deja vacío para que no se muestre texto en el botón
+        submit_button = st.form_submit_button(" ")
 
 # Lógica de envío del mensaje
 if submit_button and user_input.strip():
@@ -148,7 +136,10 @@ if submit_button and user_input.strip():
     # Refrescar la interfaz mostrando la conversación actualizada
     st.rerun()
 
-# Botón para limpiar el historial
-if st.button("🔄 Nuevo Chat"):
-    st.session_state.chat_history = []
-    st.rerun()
+# Alinear el botón "New Chat" a la derecha
+colA, colB = st.columns([8, 1])
+with colB:
+    if st.button("🔄 New Chat"):
+        st.session_state.chat_history = []
+        st.rerun()
+
