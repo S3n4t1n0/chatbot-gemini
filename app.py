@@ -149,7 +149,7 @@ if submit_button and user_input.strip():
     st.rerun()
 
 # Botón para limpiar el historial
-if st.button("🔄 New Chat"):
+if st.button("New Chat"):
     st.session_state.chat_history = []
     st.rerun()
 
