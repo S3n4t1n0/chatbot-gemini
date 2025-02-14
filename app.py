@@ -3,7 +3,7 @@ import google.generativeai as genai
 import os
 
 # Configurar API KEY
-os.environ["GOOGLE_API_KEY"] = "TU_CLAVE_API_AQUI"
+os.environ["GOOGLE_API_KEY"] = "AIzaSyB9ImlFo2TO-liWy7eyCNu3kZI6V1IQfRw"
 genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
 # Aplicar estilo oscuro con CSS
