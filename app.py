@@ -15,16 +15,15 @@ st.markdown(
             color: white;
             font-family: 'Arial', sans-serif;
         }
-        .stTextInput > div {
+        .input-container {
             position: relative;
-            display: flex;
-            align-items: center;
+            width: 100%;
         }
         .stTextInput > div > div > input {
             background-color: white;
             color: black;
             border-radius: 20px;
-            padding: 12px 40px 12px 12px;
+            padding: 12px 50px 12px 12px;
             font-size: 16px;
             border: 1px solid #30363d;
             width: 100%;
@@ -117,44 +116,23 @@ with chat_container:
         else:
             st.markdown(f'<div class="chat-wrapper-bot"><div class="chat-bubble-bot">{chat["message"]}</div></div>', unsafe_allow_html=True)
 
-# Entrada del usuario con botón de enviar
-user_input = st.text_input("", placeholder="Envía un mensaje a Gemini IA", value=st.session_state.user_input, key="user_input_input")
+# Formulario para el input del usuario
+with st.form(key="chat_form", clear_on_submit=True):
+    user_input = st.text_input("", placeholder="Envía un mensaje a Gemini IA")
+    submit_button = st.form_submit_button("➤")
 
-# HTML para botón de enviar dentro del cuadro de texto
-st.markdown(
-    """
-    <script>
-        function sendMessage() {
-            var inputBox = document.querySelector('input[data-testid="stTextInput"]');
-            if (inputBox && inputBox.value.trim() !== '') {
-                inputBox.value += ' #send';  // Agregar flag para detectar el envío
-                inputBox.dispatchEvent(new Event('change', { 'bubbles': true }));
-            }
-        }
-    </script>
-    <button class="send-button" onclick="sendMessage()">➤</button>
-    """,
-    unsafe_allow_html=True
-)
+if submit_button and user_input.strip():
+    # Guardar mensaje del usuario
+    st.session_state.chat_history.append({"role": "user", "message": user_input})
 
-# Detectar si se presionó el botón de enviar
-if "#send" in user_input:
-    user_input = user_input.replace("#send", "").strip()
-    if user_input:
-        # Guardar mensaje del usuario
-        st.session_state.chat_history.append({"role": "user", "message": user_input})
+    # Obtener respuesta de Gemini
+    response = chat_with_gemini(user_input)
 
-        # Obtener respuesta de Gemini
-        response = chat_with_gemini(user_input)
+    # Guardar respuesta del bot
+    st.session_state.chat_history.append({"role": "assistant", "message": response})
 
-        # Guardar respuesta del bot
-        st.session_state.chat_history.append({"role": "assistant", "message": response})
-
-        # Limpiar input
-        st.session_state.user_input = ""
-
-        # Refrescar la interfaz mostrando la conversación actualizada
-        st.rerun()
+    # Refrescar la interfaz mostrando la conversación actualizada
+    st.rerun()
 
 # Botón para limpiar el historial
 if st.button("🔄 Nuevo Chat"):
