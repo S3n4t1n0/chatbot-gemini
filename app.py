@@ -10,57 +10,21 @@ genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 st.markdown(
     """
     <style>
+        /* Limitar el ancho de la app */
+        [data-testid="stAppViewContainer"] {
+            max-width: 500px;
+            margin: auto;
+        }
         body {
             background-color: #0d1117;
             color: white;
             font-family: 'Arial', sans-serif;
         }
-        /* Contenedor horizontal para input y botón */
-        .horizontal-container {
-            display: flex;
-            align-items: center;
-            width: 80%;
-            margin: auto;
-        }
-        .horizontal-container .input-box {
-            flex: 1;
-        }
-        .horizontal-container input {
-            background-color: white;
-            color: black;
-            border-radius: 20px;
-            padding: 12px 50px 12px 12px;
-            font-size: 16px;
-            border: 1px solid #30363d;
-            width: 100%;
-        }
-        .horizontal-container input::placeholder {
-            color: grey;
-        }
-        .horizontal-container .send-button {
-            margin-left: -45px; /* Superponer el botón dentro del input */
-            background-color: black;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 36px;
-            height: 36px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            cursor: pointer;
-            transition: 0.3s;
-            z-index: 1;
-        }
-        .horizontal-container .send-button:hover {
-            background-color: #333;
-        }
         .chat-container {
             padding: 20px;
             border-radius: 10px;
             background-color: #161b22;
-            width: 80%;
+            width: 100%;
             margin: auto;
         }
         .chat-bubble-user {
@@ -91,6 +55,44 @@ st.markdown(
         .chat-wrapper-bot {
             align-items: flex-start;
         }
+        /* Contenedor horizontal para input y botón */
+        .horizontal-container {
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+        .horizontal-container input {
+            flex: 1;
+            background-color: white;
+            color: black;
+            border-radius: 20px;
+            padding: 12px 50px 12px 12px;
+            font-size: 16px;
+            border: 1px solid #30363d;
+        }
+        .horizontal-container input::placeholder {
+            color: grey;
+        }
+        /* El botón se superpone dentro del input */
+        .horizontal-container button {
+            background-color: black;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            margin-left: -45px; 
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .horizontal-container button:hover {
+            background-color: #333;
+        }
+        /* Botón New Chat alineado a la derecha */
+        .new-chat-container {
+            display: flex;
+            justify-content: flex-end;
+        }
     </style>
     """,
     unsafe_allow_html=True
@@ -108,7 +110,6 @@ def chat_with_gemini(prompt):
     response = model.generate_content(prompt)
     return response.text
 
-# Título y presentación
 st.markdown("<h1 style='text-align: center;'>¿En qué puedo ayudarte?</h1>", unsafe_allow_html=True)
 st.write("")
 
@@ -127,28 +128,22 @@ with chat_container:
                 unsafe_allow_html=True
             )
 
-# Formulario para el input del usuario con botón dentro del mismo contenedor
+# Formulario para el input y botón de enviar en la misma línea
 with st.form(key="chat_form", clear_on_submit=True):
     st.markdown('<div class="horizontal-container">', unsafe_allow_html=True)
     user_input = st.text_input("", placeholder="Envía un mensaje a Gemini IA", key="user_input")
-    # Se crea un botón que simula el submit; al estar en la misma línea se posiciona sobre el input
     submit_button = st.form_submit_button("➤")
     st.markdown('</div>', unsafe_allow_html=True)
 
-# Lógica de envío del mensaje
 if submit_button and user_input.strip():
-    # Guardar mensaje del usuario
     st.session_state.chat_history.append({"role": "user", "message": user_input})
-    # Obtener respuesta de Gemini
     response = chat_with_gemini(user_input)
-    # Guardar respuesta del bot
     st.session_state.chat_history.append({"role": "assistant", "message": response})
-    # Refrescar la interfaz para mostrar la conversación actualizada
     st.rerun()
 
-# Botón para limpiar el historial, alineado a la derecha
-colA, colB = st.columns([9, 1])
-with colB:
-    if st.button("New Chat"):
-        st.session_state.chat_history = []
-        st.rerun()
+# Botón New Chat alineado a la derecha
+st.markdown('<div class="new-chat-container">', unsafe_allow_html=True)
+if st.button("New Chat"):
+    st.session_state.chat_history = []
+    st.rerun()
+st.markdown('</div>', unsafe_allow_html=True)
