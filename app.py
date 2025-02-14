@@ -10,9 +10,9 @@ genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 st.markdown(
     """
     <style>
-        /* Limitar el ancho de la app */
+        /* Aumentar el ancho de la app */
         [data-testid="stAppViewContainer"] {
-            max-width: 500px;
+            max-width: 1000px;
             margin: auto;
         }
         body {
