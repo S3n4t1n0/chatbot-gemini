@@ -3,7 +3,7 @@ import google.generativeai as genai
 import os
 
 # Configurar API KEY
-os.environ["GOOGLE_API_KEY"] = "AIzaSyB9ImlFo2TO-liWy7eyCNu3kZI6V1IQfRw"
+os.environ["GOOGLE_API_KEY"] = "TU_CLAVE_API_AQUI"
 genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
 # Estilos personalizados con CSS
@@ -16,6 +16,13 @@ st.markdown(
             font-family: 'Arial', sans-serif;
         }
         .input-container {
+            position: relative;
+            width: 100%;
+        }
+        .stTextInput {
+            width: 100%;
+        }
+        .stTextInput > div > div {
             position: relative;
             width: 100%;
         }
@@ -45,8 +52,9 @@ st.markdown(
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 16px;
+            font-size: 18px;
             cursor: pointer;
+            transition: 0.3s;
         }
         .send-button:hover {
             background-color: #333;
@@ -118,9 +126,15 @@ with chat_container:
 
 # Formulario para el input del usuario
 with st.form(key="chat_form", clear_on_submit=True):
-    user_input = st.text_input("", placeholder="Envía un mensaje a Gemini IA")
-    submit_button = st.form_submit_button("➤")
+    col1, col2 = st.columns([8, 1])  # Ajusta el tamaño del input y del botón
 
+    with col1:
+        user_input = st.text_input("", placeholder="Envía un mensaje a Gemini IA", key="user_input")
+
+    with col2:
+        submit_button = st.form_submit_button("➤")
+
+# Lógica de envío del mensaje
 if submit_button and user_input.strip():
     # Guardar mensaje del usuario
     st.session_state.chat_history.append({"role": "user", "message": user_input})
@@ -138,3 +152,4 @@ if submit_button and user_input.strip():
 if st.button("🔄 Nuevo Chat"):
     st.session_state.chat_history = []
     st.rerun()
+
