@@ -6,7 +6,6 @@ import os
 os.environ["GOOGLE_API_KEY"] = "AIzaSyB9ImlFo2TO-liWy7eyCNu3kZI6V1IQfRw"
 genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
-# Estilos personalizados con CSS
 st.markdown(
     """
     <style>
@@ -55,40 +54,39 @@ st.markdown(
         .chat-wrapper-bot {
             align-items: flex-start;
         }
-        /* Contenedor horizontal para input y botón */
-        .horizontal-container {
-            display: flex;
+        /* Forzar la alineación vertical en los bloques horizontales */
+        [data-testid="stHorizontalBlock"] {
             align-items: center;
-            width: 100%;
         }
-        .horizontal-container input {
-            flex: 1;
+        /* Estilos para el text input */
+        .stTextInput input {
             background-color: white;
             color: black;
             border-radius: 20px;
-            padding: 12px 50px 12px 12px;
+            padding: 12px;
             font-size: 16px;
             border: 1px solid #30363d;
+            height: 40px;
         }
-        .horizontal-container input::placeholder {
+        .stTextInput input::placeholder {
             color: grey;
         }
-        /* El botón se superpone dentro del input */
-        .horizontal-container button {
+        /* Estilos para el botón de enviar */
+        .send-button {
             background-color: black;
             color: white;
             border: none;
             border-radius: 50%;
-            width: 36px;
-            height: 36px;
-            margin-left: -45px; 
+            width: 40px;
+            height: 40px;
             cursor: pointer;
             transition: 0.3s;
+            font-size: 18px;
         }
-        .horizontal-container button:hover {
+        .send-button:hover {
             background-color: #333;
         }
-        /* Botón New Chat alineado a la derecha */
+        /* Alinear el botón New Chat a la derecha */
         .new-chat-container {
             display: flex;
             justify-content: flex-end;
@@ -104,7 +102,6 @@ if "chat_history" not in st.session_state:
 if "user_input" not in st.session_state:
     st.session_state.user_input = ""
 
-# Función para chatear con Gemini
 def chat_with_gemini(prompt):
     model = genai.GenerativeModel("gemini-pro")
     response = model.generate_content(prompt)
@@ -128,13 +125,12 @@ with chat_container:
                 unsafe_allow_html=True
             )
 
-# Formulario para el input y botón de enviar en la misma línea
+# Formulario con columnas para alinear el input y el botón horizontalmente
 with st.form(key="chat_form", clear_on_submit=True):
-    st.markdown('<div class="horizontal-container">', unsafe_allow_html=True)
-    user_input = st.text_input("", placeholder="Envía un mensaje a Gemini IA", key="user_input")
-    submit_button = st.form_submit_button("➤")
-    st.markdown('</div>', unsafe_allow_html=True)
-
+    cols = st.columns([9, 1])
+    user_input = cols[0].text_input("", placeholder="Envía un mensaje a Gemini IA", key="user_input", label_visibility="collapsed")
+    submit_button = cols[1].form_submit_button("➤")
+    
 if submit_button and user_input.strip():
     st.session_state.chat_history.append({"role": "user", "message": user_input})
     response = chat_with_gemini(user_input)
