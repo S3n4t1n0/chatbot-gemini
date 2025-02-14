@@ -112,8 +112,8 @@ def chat_with_gemini(prompt):
     return response.text
 
 # Contenedor principal del chat
-st.markdown("<h1 style='text-align: center;'>💬 Chatbot con Gemini AI</h1>", unsafe_allow_html=True)
-st.write("Escribe un mensaje y recibe una respuesta de Gemini AI.")
+st.markdown("<h1 style='text-align: center;'> ¿En qué puedo ayudarte?</h1>", unsafe_allow_html=True)
+st.write("")
 
 chat_container = st.container()
 
