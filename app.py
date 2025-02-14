@@ -15,18 +15,17 @@ st.markdown(
             color: white;
             font-family: 'Arial', sans-serif;
         }
-        .input-container {
-            position: relative;
-            width: 100%;
+        /* Contenedor horizontal para input y botón */
+        .horizontal-container {
+            display: flex;
+            align-items: center;
+            width: 80%;
+            margin: auto;
         }
-        .stTextInput {
-            width: 100%;
+        .horizontal-container .input-box {
+            flex: 1;
         }
-        .stTextInput > div > div {
-            position: relative;
-            width: 100%;
-        }
-        .stTextInput > div > div > input {
+        .horizontal-container input {
             background-color: white;
             color: black;
             border-radius: 20px;
@@ -35,14 +34,11 @@ st.markdown(
             border: 1px solid #30363d;
             width: 100%;
         }
-        .stTextInput > div > div > input::placeholder {
+        .horizontal-container input::placeholder {
             color: grey;
         }
-        .send-button {
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
+        .horizontal-container .send-button {
+            margin-left: -45px; /* Superponer el botón dentro del input */
             background-color: black;
             color: white;
             border: none;
@@ -55,8 +51,9 @@ st.markdown(
             font-size: 18px;
             cursor: pointer;
             transition: 0.3s;
+            z-index: 1;
         }
-        .send-button:hover {
+        .horizontal-container .send-button:hover {
             background-color: #333;
         }
         .chat-container {
@@ -111,45 +108,47 @@ def chat_with_gemini(prompt):
     response = model.generate_content(prompt)
     return response.text
 
-# Contenedor principal del chat
-st.markdown("<h1 style='text-align: center;'> ¿En qué puedo ayudarte?</h1>", unsafe_allow_html=True)
+# Título y presentación
+st.markdown("<h1 style='text-align: center;'>¿En qué puedo ayudarte?</h1>", unsafe_allow_html=True)
 st.write("")
 
+# Mostrar historial de conversación
 chat_container = st.container()
-
 with chat_container:
     for chat in st.session_state.chat_history:
         if chat["role"] == "user":
-            st.markdown(f'<div class="chat-wrapper"><div class="chat-bubble-user">{chat["message"]}</div></div>', unsafe_allow_html=True)
+            st.markdown(
+                f'<div class="chat-wrapper"><div class="chat-bubble-user">{chat["message"]}</div></div>',
+                unsafe_allow_html=True
+            )
         else:
-            st.markdown(f'<div class="chat-wrapper-bot"><div class="chat-bubble-bot">{chat["message"]}</div></div>', unsafe_allow_html=True)
+            st.markdown(
+                f'<div class="chat-wrapper-bot"><div class="chat-bubble-bot">{chat["message"]}</div></div>',
+                unsafe_allow_html=True
+            )
 
-# Formulario para el input del usuario
+# Formulario para el input del usuario con botón dentro del mismo contenedor
 with st.form(key="chat_form", clear_on_submit=True):
-    col1, col2 = st.columns([8, 1])  # Ajusta el tamaño del input y del botón
-
-    with col1:
-        user_input = st.text_input("", placeholder="Envía un mensaje a Gemini IA", key="user_input")
-
-    with col2:
-        submit_button = st.form_submit_button("➤")
+    st.markdown('<div class="horizontal-container">', unsafe_allow_html=True)
+    user_input = st.text_input("", placeholder="Envía un mensaje a Gemini IA", key="user_input")
+    # Se crea un botón que simula el submit; al estar en la misma línea se posiciona sobre el input
+    submit_button = st.form_submit_button("➤")
+    st.markdown('</div>', unsafe_allow_html=True)
 
 # Lógica de envío del mensaje
 if submit_button and user_input.strip():
     # Guardar mensaje del usuario
     st.session_state.chat_history.append({"role": "user", "message": user_input})
-
     # Obtener respuesta de Gemini
     response = chat_with_gemini(user_input)
-
     # Guardar respuesta del bot
     st.session_state.chat_history.append({"role": "assistant", "message": response})
-
-    # Refrescar la interfaz mostrando la conversación actualizada
+    # Refrescar la interfaz para mostrar la conversación actualizada
     st.rerun()
 
-# Botón para limpiar el historial
-if st.button("New Chat"):
-    st.session_state.chat_history = []
-    st.rerun()
-
+# Botón para limpiar el historial, alineado a la derecha
+colA, colB = st.columns([9, 1])
+with colB:
+    if st.button("New Chat"):
+        st.session_state.chat_history = []
+        st.rerun()
