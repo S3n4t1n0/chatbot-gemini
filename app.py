@@ -3,35 +3,47 @@ import google.generativeai as genai
 import os
 
 # Configurar API KEY
-os.environ["GOOGLE_API_KEY"] = "AIzaSyB9ImlFo2TO-liWy7eyCNu3kZI6V1IQfRw"
+os.environ["GOOGLE_API_KEY"] = "TU_CLAVE_API_AQUI"
 genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
-# Aplicar estilo oscuro con CSS
+# Estilos personalizados con CSS
 st.markdown(
     """
     <style>
         body {
-            background-color: #1e1e1e;
+            background-color: #0d1117;
             color: white;
+            font-family: 'Arial', sans-serif;
         }
         .stTextInput > div > div > input {
-            background-color: #333;
+            background-color: #161b22;
             color: white;
-            border-radius: 10px;
-            padding: 10px;
+            border-radius: 12px;
+            padding: 12px;
+            font-size: 16px;
+            border: 1px solid #30363d;
         }
         .stButton > button {
-            background-color: #0084ff;
+            background-color: #238636;
             color: white;
-            border-radius: 10px;
-            padding: 8px 16px;
+            border-radius: 8px;
+            padding: 10px 20px;
             font-size: 16px;
+            border: none;
+            transition: 0.3s;
         }
         .stButton > button:hover {
-            background-color: #005bb5;
+            background-color: #2ea043;
+        }
+        .chat-container {
+            padding: 20px;
+            border-radius: 10px;
+            background-color: #161b22;
+            width: 80%;
+            margin: auto;
         }
         .chat-bubble-user {
-            background-color: #0084ff;
+            background-color: #238636;
             color: white;
             padding: 10px;
             border-radius: 10px;
@@ -39,7 +51,7 @@ st.markdown(
             text-align: right;
         }
         .chat-bubble-bot {
-            background-color: #333;
+            background-color: #30363d;
             color: white;
             padding: 10px;
             border-radius: 10px;
@@ -63,12 +75,10 @@ def chat_with_gemini(prompt):
     response = model.generate_content(prompt)
     return response.text
 
-# Título y diseño de la interfaz
-st.title("💬 Chatbot con Gemini AI")
+# Contenedor principal del chat
+st.markdown("<h1 style='text-align: center;'>💬 Chatbot con Gemini AI</h1>", unsafe_allow_html=True)
 st.write("Escribe un mensaje y recibe una respuesta de Gemini AI.")
 
-# Mostrar historial de chat
-st.subheader("📝 Conversación")
 chat_container = st.container()
 
 with chat_container:
