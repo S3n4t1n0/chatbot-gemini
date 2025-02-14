@@ -3,7 +3,7 @@ import google.generativeai as genai
 import os
 
 # Configurar API KEY
-os.environ["GOOGLE_API_KEY"] = "TU_CLAVE_API_AQUI"
+os.environ["GOOGLE_API_KEY"] = "AIzaSyB9ImlFo2TO-liWy7eyCNu3kZI6V1IQfRw"
 genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
 # Estilos personalizados con CSS
@@ -19,12 +19,15 @@ st.markdown(
             position: relative;
             width: 100%;
         }
-        .stTextInput {
+        .stTextInput > div {
+            position: relative;
             width: 100%;
         }
         .stTextInput > div > div {
-            position: relative;
+            display: flex;
+            align-items: center;
             width: 100%;
+            position: relative;
         }
         .stTextInput > div > div > input {
             background-color: white;
@@ -124,18 +127,27 @@ with chat_container:
         else:
             st.markdown(f'<div class="chat-wrapper-bot"><div class="chat-bubble-bot">{chat["message"]}</div></div>', unsafe_allow_html=True)
 
-# Formulario para el input del usuario
-with st.form(key="chat_form", clear_on_submit=True):
-    col1, col2 = st.columns([8, 1])  # Ajusta el tamaño del input y del botón
-
-    with col1:
-        user_input = st.text_input("", placeholder="Envía un mensaje a Gemini IA", key="user_input")
-
-    with col2:
-        submit_button = st.form_submit_button("➤")
+# Contenedor del input con botón dentro
+st.markdown('<div class="input-container">', unsafe_allow_html=True)
+user_input = st.text_input("", placeholder="Envía un mensaje a Gemini IA", key="user_input")
+st.markdown(
+    """
+    <button class="send-button" onclick="sendMessage()">➤</button>
+    <script>
+        function sendMessage() {
+            var inputField = document.querySelector('input[data-testid="stTextInput"]');
+            if (inputField.value.trim() !== "") {
+                inputField.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+        }
+    </script>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
 
 # Lógica de envío del mensaje
-if submit_button and user_input.strip():
+if user_input and user_input.strip():
     # Guardar mensaje del usuario
     st.session_state.chat_history.append({"role": "user", "message": user_input})
 
@@ -145,11 +157,15 @@ if submit_button and user_input.strip():
     # Guardar respuesta del bot
     st.session_state.chat_history.append({"role": "assistant", "message": response})
 
-    # Refrescar la interfaz mostrando la conversación actualizada
+    # Limpiar input después de enviar
+    st.session_state.user_input = ""
+
+    # Recargar la interfaz para mostrar el nuevo mensaje
     st.rerun()
 
 # Botón para limpiar el historial
 if st.button("🔄 Nuevo Chat"):
     st.session_state.chat_history = []
     st.rerun()
+
 
