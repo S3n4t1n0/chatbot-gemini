@@ -49,7 +49,7 @@ with st.container():
 
 # Entrada de usuario
 with st.form(key="chat_form", clear_on_submit=True):
-    user_input = st.text_input("", placeholder="Envía un mensaje a Gemini IA", label_visibility="collapsed")
+    user_input = st.text_input("", placeholder="Envía un mensaje a Gemini IA", key="user_input", label_visibility="collapsed")
     submit_button = st.form_submit_button("➤")
 
 if submit_button and user_input.strip():
