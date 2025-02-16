@@ -13,11 +13,11 @@ st.markdown(
         [data-testid="stAppViewContainer"] { max-width: 1000px; margin: auto; }
         body { background-color: #0d1117; color: white; font-family: 'Arial', sans-serif; }
         .chat-container { padding: 20px; border-radius: 10px; background-color: #161b22; width: 100%; margin: auto; }
-        .chat-bubble { padding: 10px; border-radius: 15px; margin: 5px 0; display: inline-block; max-width: 60%; }
+        .chat-bubble { padding: 10px; border-radius: 15px; margin: 5px 0; display: inline-block; max-width: 100%; }
         .chat-user { background-color: #6c757d; color: white; text-align: right; }
-        .chat-bot { background-color: white; color: black; text-align: left; }
+        .chat-bot { background-color: white; color: black; text-align: left; width: 100%; }
         .chat-wrapper { display: flex; flex-direction: column; align-items: flex-end; }
-        .chat-wrapper-bot { align-items: flex-start; }
+        .chat-wrapper-bot { align-items: flex-start; width: 100%; }
         .stTextInput input { background-color: white; color: black; border-radius: 20px; padding: 12px; font-size: 16px; }
         .stTextInput input::placeholder { color: grey; }
         .send-button { background-color: black; color: white; border: none; border-radius: 50%; width: 40px; height: 40px; cursor: pointer; transition: 0.3s; font-size: 18px; }
